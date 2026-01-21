@@ -1,0 +1,34 @@
+services:
+  claude-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claude-sandbox
+    stdin_open: true  # Keep STDIN open for interactive use
+    tty: true         # Allocate a pseudo-TTY
+    volumes:
+      # Mount the project directory (read-write for development)
+      - .:/workspace
+      # Mount Claude config for authentication persistence
+      - ~/.claude:/home/developer/.claude
+      # Persist pnpm cache
+      - pnpm-cache:/home/developer/.local/share/pnpm
+      # Persist cargo cache
+      - cargo-cache:/home/developer/.cargo/registry
+    environment:
+      - TERM=xterm-256color
+    # Security options for sandbox
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+    # Network isolation (optional - comment out if you need network access)
+    # network_mode: none
+
+volumes:
+  pnpm-cache:
+  cargo-cache:
